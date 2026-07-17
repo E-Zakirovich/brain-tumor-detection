@@ -1,5 +1,5 @@
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split, Subset
 from torchvision import transforms, datasets
 import config
 
@@ -65,4 +65,28 @@ class DataPipeline:
             transform=self.eval_transform
         )
 
-        
+        # it is time to identify the number of evaluation and train dataset elements
+        val_size = int(validation_split * len(train_set))
+        train_size = len(train_set) - val_size
+
+        # Fix random seed. Every run produces the SAME train/validation split.
+        generator = torch.Generator().manual_seed(seed)
+
+        # I am splitting the dataset into two parts
+        train_indices, val_indices = random_split(
+            train_set,
+            length=[train_size, val_size],
+            generator=generator
+        )
+
+        # splitting the train dataset
+        train_dataset = Subset(
+            train_set,
+            indices=train_indices.indices
+        )
+
+        # splitting the evaluation dataset
+        val_dataset = Subset(
+            eval_set,
+            indices=val_indices.indices
+        )
