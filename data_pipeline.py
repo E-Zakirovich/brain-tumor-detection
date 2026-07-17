@@ -7,7 +7,6 @@ import config
 class DataPipeline:
 
     def __init__(self):
-
         self.train_transform = transforms.Compose([
 
             # the size of some images might not be same as others, so I need all images must be in same size
@@ -48,3 +47,22 @@ class DataPipeline:
                 std=[0.229, 0.224, 0.225]
             )
         ])
+
+    def get_loaders(
+            self,
+            batch_size: int = config.batch_size,
+            validation_split: float | int = 0.15, seed: int = 42
+    ):
+        # loading the train dataset
+        train_set = datasets.ImageFolder(
+            root=config.train_data,
+            transform=self.train_transform
+        )
+
+        # loading the validation dataset
+        eval_set = datasets.ImageFolder(
+            root=config.train_data,
+            transform=self.eval_transform
+        )
+
+        
